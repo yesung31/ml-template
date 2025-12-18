@@ -9,7 +9,7 @@
     - Add your model in `models/your_model.py`. It must inherit `pl.LightningModule`.
     - Add your data module in `data/{task}/{dataset}.py` (e.g., `data/classification/mnist.py`). It must inherit `pl.LightningDataModule`.
 4.  **Run**:
-    - `python train.py model.class_name=YourModel data.class_name=classification.mnist.MNISTDataModule`
+    - `python train.py model.name=YourModel data.name=MNISTDataModule`
     - Or update `configs/config.yaml` defaults.
 5.  **Clean**: Delete this section and update the title below.
 
