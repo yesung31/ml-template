@@ -39,7 +39,7 @@ python train.py
 You can override parameters from the command line:
 
 ```bash
-python train.py model.name=MyModel data.name=CIFAR10 data.class_name=classification.cifar.CIFAR10
+python train.py model.name=MyModel data.name=CIFAR10
 ```
 
 `data.name` is used for the log directory name, while `data.class_name` is used to import the class.
@@ -49,7 +49,7 @@ python train.py model.name=MyModel data.name=CIFAR10 data.class_name=classificat
 To evaluate a trained model, provide the path to the checkpoint:
 
 ```bash
-python eval.py logs/template.datamodule.TemplateDataModule/TemplateModel/.../checkpoints/last.ckpt
+python eval.py logs/DataModule/Model/.../checkpoints/last.ckpt
 ```
 
 This script automatically finds the corresponding configuration file in the `.hydra` directory relative to the checkpoint.
