@@ -1,0 +1,16 @@
+name: torch
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - tensorboard
+  - pillow
+  - pytorch
+  - matplotlib
+  - lightning
+  - numpy
+  - torchvision
+  - opt_einsum
+  - hydra-core
+  - pandas
+  - torch-tb-profiler

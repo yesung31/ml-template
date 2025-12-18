@@ -1,0 +1,14 @@
+defaults:
+  - _self_
+  - data: template
+  - model: template
+
+seed: 42
+max_epochs: 10
+accelerator: "auto"
+devices: "auto"
+
+# Hydra settings
+hydra:
+  run:
+    dir: logs/${data.name}/${model.name}/${now:%Y-%m-%d_%H-%M-%S}
