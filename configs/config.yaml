@@ -12,3 +12,6 @@ devices: "auto"
 hydra:
   run:
     dir: logs/${data.name}/${model.name}/${now:%Y-%m-%d_%H-%M-%S}
+  sweep:
+    dir: logs/multirun/${now:%Y-%m-%d_%H-%M-%S}
+    subdir: ${data.name}/${model.name}/${hydra.job.num}

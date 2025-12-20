@@ -27,7 +27,7 @@ def main(cfg: DictConfig):
     dm = instantiate(DataClass, cfg.data)
 
     # Logger
-    log_dir = hydra.core.hydra_config.HydraConfig.get().run.dir
+    log_dir = hydra.core.hydra_config.HydraConfig.get().runtime.output_dir
     logger = TensorBoardLogger(save_dir=log_dir, name="", version="")
 
     # Checkpointing
