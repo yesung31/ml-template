@@ -44,6 +44,26 @@ python train.py model.name=MyModel data.name=CIFAR10
 
 `data.name` is used for the log directory name, while `data.class_name` is used to import the class.
 
+### Multirun
+
+You can run hyperparameter sweeps using the `-m` or `--multirun` flag:
+
+```bash
+python train.py -m max_epochs=5,10 seed=42,43
+```
+
+This creates a folder structure organized by the sweep timestamp, then data/model, and finally the job number:
+
+```
+logs/
+└── multirun/
+    └── 2025-12-20_10-00-00/
+        ├── TemplateData/TemplateModel/0/
+        ├── TemplateData/TemplateModel/1/
+        ├── TemplateData/TemplateModel/2/
+        └── TemplateData/TemplateModel/3/
+```
+
 ## Evaluation
 
 To evaluate a trained model, provide the path to the checkpoint:
