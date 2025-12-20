@@ -64,6 +64,39 @@ logs/
         └── TemplateData/TemplateModel/3/
 ```
 
+## Logging
+
+This project uses both **Weights & Biases (WandB)** and **TensorBoard** for logging.
+
+### Weights & Biases
+
+WandB is enabled by default. The logger is configured as follows:
+- **Project**: The name of the current directory (e.g., `ml-template`).
+- **Run Name**: `{data.name}/{model.name}`.
+
+**Configuration:**
+You can change the WandB mode using the `wandb.mode` parameter:
+
+```bash
+# Default (Online)
+python train.py
+
+# Offline (save logs locally, sync later)
+python train.py wandb.mode=offline
+
+# Disabled (no WandB logging)
+python train.py wandb.mode=disabled
+```
+
+### TensorBoard
+
+TensorBoard logs are saved locally in the `logs/` directory. Even if WandB is disabled, TensorBoard logging remains active.
+
+To view logs:
+```bash
+tensorboard --logdir logs/
+```
+
 ## Evaluation
 
 To evaluate a trained model, provide the path to the checkpoint:

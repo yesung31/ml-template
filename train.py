@@ -1,8 +1,10 @@
 import os
+from pathlib import Path
+
 import hydra
 from omegaconf import DictConfig, OmegaConf
 import pytorch_lightning as pl
-from pytorch_lightning.loggers import TensorBoardLogger
+from pytorch_lightning.loggers import TensorBoardLogger, WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
 
 import data
@@ -29,7 +31,14 @@ def main(cfg: DictConfig):
 
     # Logger
     log_dir = hydra.core.hydra_config.HydraConfig.get().runtime.output_dir
-    logger = TensorBoardLogger(save_dir=log_dir, name="", version="")
+    tb_logger = TensorBoardLogger(save_dir=log_dir, name="", version="")
+    wandb_logger = WandbLogger(
+        save_dir=log_dir,
+        project=Path.cwd().name,
+        name=f"{cfg.data.name}/{cfg.model.name}",
+        mode=cfg.wandb.mode,
+        log_model="all",
+    )
 
     # Checkpointing
     checkpoint_callback = ModelCheckpoint(
@@ -43,7 +52,7 @@ def main(cfg: DictConfig):
         max_epochs=cfg.max_epochs,
         accelerator=cfg.accelerator,
         devices=cfg.devices,
-        logger=logger,
+        logger=[tb_logger, wandb_logger],
         callbacks=[checkpoint_callback],
         log_every_n_steps=10,
     )

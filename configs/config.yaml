@@ -8,6 +8,9 @@ max_epochs: 10
 accelerator: "auto"
 devices: "auto"
 
+wandb:
+  mode: "online" # Options: online, offline, disabled
+
 # Hydra settings
 hydra:
   run:

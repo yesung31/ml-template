@@ -14,3 +14,4 @@ dependencies:
   - hydra-core
   - pandas
   - torch-tb-profiler
+  - wandb
