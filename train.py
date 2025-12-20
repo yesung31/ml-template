@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import hydra
+import wandb
 from omegaconf import DictConfig, OmegaConf
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import TensorBoardLogger, WandbLogger
@@ -9,7 +10,10 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 
 import data
 import models
-from utils.helpers import instantiate
+from utils.helpers import instantiate, get_resume_info, register_resolvers
+
+
+register_resolvers()
 
 
 @hydra.main(config_path="configs", config_name="config", version_base="1.3")
@@ -29,8 +33,11 @@ def main(cfg: DictConfig):
     model = instantiate(ModelClass, cfg.model)
     dm = instantiate(DataClass, cfg.data)
 
+    # Handle Resume
+    log_dir = Path(hydra.core.hydra_config.HydraConfig.get().runtime.output_dir)
+    ckpt_path, wandb_id = get_resume_info(log_dir) if cfg.resume else (None, None)
+
     # Logger
-    log_dir = hydra.core.hydra_config.HydraConfig.get().runtime.output_dir
     tb_logger = TensorBoardLogger(save_dir=log_dir, name="", version="")
     wandb_logger = WandbLogger(
         save_dir=log_dir,
@@ -38,6 +45,8 @@ def main(cfg: DictConfig):
         name=f"{cfg.data.name}/{cfg.model.name}",
         mode=cfg.wandb.mode,
         log_model="all",
+        id=wandb_id,
+        resume="allow",
     )
 
     # Checkpointing
@@ -57,7 +66,9 @@ def main(cfg: DictConfig):
         log_every_n_steps=10,
     )
 
-    trainer.fit(model, dm)
+    trainer.fit(model, dm, ckpt_path=ckpt_path)
+
+    wandb.finish()
 
 
 if __name__ == "__main__":

@@ -64,6 +64,25 @@ logs/
         └── TemplateData/TemplateModel/3/
 ```
 
+### Resuming Training
+
+You can resume training from a previously interrupted run using the `resume` parameter. This will automatically:
+1.  Load the `last.ckpt` from the checkpoints folder.
+2.  Reconnect to the previous WandB run ID.
+3.  Continue logging in the same TensorBoard directory.
+
+#### Single Run
+Point `resume` to the specific run directory:
+```bash
+python train.py resume=logs/TemplateData/TemplateModel/2025-12-20_10-00-00
+```
+
+#### Multirun
+Point `resume` to the root multirun directory. **Note:** You must repeat the original parameters to ensure Hydra reconstructs the job list in the same order.
+```bash
+python train.py -m max_epochs=10 seed=1,2,3 resume=logs/multirun/2025-12-20_10-00-00
+```
+
 ## Logging
 
 This project uses both **Weights & Biases (WandB)** and **TensorBoard** for logging.
