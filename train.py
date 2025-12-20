@@ -1,3 +1,4 @@
+import os
 import hydra
 from omegaconf import DictConfig, OmegaConf
 import pytorch_lightning as pl
@@ -32,7 +33,7 @@ def main(cfg: DictConfig):
 
     # Checkpointing
     checkpoint_callback = ModelCheckpoint(
-        dirpath="checkpoints",
+        dirpath=os.path.join(log_dir, "checkpoints"),
         save_top_k=1,
         save_last=True,
         verbose=True,
