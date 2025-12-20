@@ -4,10 +4,8 @@ from torch import nn
 class TemplateNetwork(nn.Module):
     def __init__(self):
         super().__init__()
-        raise NotImplementedError(
-            "TemplateNetwork is a placeholder. "
-            "Implement your network architecture here."
-        )
+        # Dummy network matching the dummy data (32 input dim, 2 output classes)
+        self.layer = nn.Linear(32, 2)
 
     def forward(self, x):
-        pass
+        return self.layer(x)

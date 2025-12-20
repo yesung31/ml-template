@@ -1,3 +1,6 @@
+import torch
+import warnings
+from torch.utils.data import DataLoader, TensorDataset
 from pytorch_lightning import LightningDataModule
 
 
@@ -5,23 +8,27 @@ class TemplateDataModule(LightningDataModule):
     def __init__(self, **kwargs):
         super().__init__()
         self.save_hyperparameters()
-        raise NotImplementedError(
-            "TemplateDataModule is a placeholder. "
-            "Please implement your own data module in a new file inside the 'data' directory "
-            "and update the config or command line arguments to use it."
+        warnings.warn(
+            "TemplateDataModule is using dummy random data. "
+            "Replace this with your actual data loading logic.",
+            UserWarning
         )
 
     def prepare_data(self):
+        # Download data, etc.
         pass
 
     def setup(self, stage=None):
-        pass
+        # Create dummy data: 100 samples, 32 dimensions
+        self.train_dataset = TensorDataset(torch.randn(100, 32), torch.randint(0, 2, (100,)))
+        self.val_dataset = TensorDataset(torch.randn(20, 32), torch.randint(0, 2, (20,)))
+        self.test_dataset = TensorDataset(torch.randn(20, 32), torch.randint(0, 2, (20,)))
 
     def train_dataloader(self):
-        pass
+        return DataLoader(self.train_dataset, batch_size=32)
 
     def val_dataloader(self):
-        pass
+        return DataLoader(self.val_dataset, batch_size=32)
 
     def test_dataloader(self):
-        pass
+        return DataLoader(self.test_dataset, batch_size=32)
