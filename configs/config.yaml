@@ -15,7 +15,7 @@ wandb:
 # Hydra settings
 hydra:
   run:
-    dir: ${resolve_run_dir:${resume},${data.name},${model.name}}
+    dir: ${resume_or_new:${resume},logs/${data.name}/${model.name}/${now:%Y-%m-%d_%H-%M-%S}}
   sweep:
-    dir: ${resolve_sweep_dir:${resume}}
+    dir: ${resume_or_new:${resume},logs/multirun/${now:%Y-%m-%d_%H-%M-%S}}
     subdir: ${data.name}/${model.name}/${hydra.job.num}
