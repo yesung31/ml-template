@@ -1,0 +1,13 @@
+torch
+torchvision
+lightning
+tensorboard
+pillow
+matplotlib
+numpy
+opt_einsum
+hydra-core
+pandas
+torch-tb-profiler
+wandb
+scipy
