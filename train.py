@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import torch
 import hydra
 import wandb
 from omegaconf import DictConfig, OmegaConf
@@ -20,6 +21,7 @@ register_resolvers()
 def main(cfg: DictConfig):
     print(f"Training with config:\n{OmegaConf.to_yaml(cfg)}")
 
+    torch.set_float32_matmul_precision("medium")
     pl.seed_everything(cfg.seed)
 
     # Dynamic loading of Model and DataModule
@@ -61,6 +63,7 @@ def main(cfg: DictConfig):
         max_epochs=cfg.max_epochs,
         accelerator=cfg.accelerator,
         devices=cfg.devices,
+        precision="bf16-mixed",
         logger=[tb_logger, wandb_logger],
         callbacks=[checkpoint_callback],
         log_every_n_steps=10,
