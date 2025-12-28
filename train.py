@@ -44,7 +44,7 @@ def main(cfg: DictConfig):
         save_dir=log_dir,
         project=Path.cwd().name,
         name=f"{cfg.data.name}/{cfg.model.name}",
-        mode=cfg.wandb.mode,
+        mode=cfg.wandb,
         log_model="all",
         id=wandb_id,
         resume="allow",
