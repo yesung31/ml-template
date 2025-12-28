@@ -9,8 +9,7 @@ accelerator: "auto"
 devices: "auto"
 resume: null
 
-wandb:
-  mode: "online" # Options: online, offline, disabled
+wandb: "online" # Options: online, offline, disabled
 
 # Hydra settings
 hydra:

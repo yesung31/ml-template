@@ -1,1 +1,1 @@
-from .datamodule import TemplateDataModule  # noqa: F401
+from .datamodule import TemplateDataModule
