@@ -1,5 +1,6 @@
-from omegaconf import OmegaConf
 from pathlib import Path
+
+from omegaconf import OmegaConf
 
 
 def register_resolvers():

@@ -1,18 +1,17 @@
 import os
 from pathlib import Path
 
-import torch
 import hydra
+import pytorch_lightning as pl
+import torch
 import wandb
 from omegaconf import DictConfig, OmegaConf
-import pytorch_lightning as pl
-from pytorch_lightning.loggers import TensorBoardLogger, WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.loggers import TensorBoardLogger, WandbLogger
 
 import data
 import models
-from utils.helpers import instantiate, get_resume_info, register_resolvers
-
+from utils.helpers import get_resume_info, instantiate, register_resolvers
 
 register_resolvers()
 

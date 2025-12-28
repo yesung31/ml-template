@@ -1,7 +1,8 @@
-import torch
 import warnings
-from torch.utils.data import DataLoader, TensorDataset
+
+import torch
 from pytorch_lightning import LightningDataModule
+from torch.utils.data import DataLoader, TensorDataset
 
 
 class TemplateDataModule(LightningDataModule):
@@ -11,7 +12,7 @@ class TemplateDataModule(LightningDataModule):
         warnings.warn(
             "TemplateDataModule is using dummy random data. "
             "Replace this with your actual data loading logic.",
-            UserWarning
+            UserWarning,
         )
 
     def prepare_data(self):

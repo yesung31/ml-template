@@ -1,5 +1,5 @@
-import pkgutil
 import importlib
+import pkgutil
 
 # Automatically find and import all sub-packages/modules
 # and expose their contents here.

@@ -1,18 +1,17 @@
+import argparse
 import os
 import sys
-import argparse
+
 import pytorch_lightning as pl
 
-from utils.helpers import load_config_from_ckpt, instantiate
 import data
 import models
+from utils.helpers import instantiate, load_config_from_ckpt
 
 
 def main():
     parser = argparse.ArgumentParser(description="Evaluate a trained model.")
-    parser.add_argument(
-        "ckpt_path", type=str, help="Path to the checkpoint file (.ckpt)"
-    )
+    parser.add_argument("ckpt_path", type=str, help="Path to the checkpoint file (.ckpt)")
     args = parser.parse_args()
 
     if not os.path.exists(args.ckpt_path):
