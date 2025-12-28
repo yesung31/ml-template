@@ -18,6 +18,7 @@ dependencies = [
     "torch-tb-profiler",
     "wandb",
     "scipy",
+    # "submodule_name @ file://./path/to/submodule",
 ]
 
 [dependency-groups]
