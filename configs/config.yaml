@@ -8,6 +8,7 @@ max_epochs: 10
 accelerator: "auto"
 devices: "auto"
 resume: null
+compile: false
 
 wandb: "online" # Options: online, offline, disabled
 

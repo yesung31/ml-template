@@ -34,6 +34,11 @@ def main(cfg: DictConfig):
     model = instantiate(ModelClass, cfg.model)
     dm = instantiate(DataClass, cfg.data)
 
+    # Compile model
+    if cfg.compile:
+        print("Compiling model...")
+        model = torch.compile(model)
+
     # Handle Resume
     log_dir = Path(hydra.core.hydra_config.HydraConfig.get().runtime.output_dir)
     ckpt_path, wandb_id = get_resume_info(log_dir) if cfg.resume else (None, None)
