@@ -3,13 +3,14 @@
 
 1.  **Rename**: Rename this folder to your project name.
 2.  **Environment**: 
-    - Rename `environment.yml` name if needed (default is `torch`).
-    - Run `conda env create -f environment.yml`.
+    - This project uses `uv` for lightning-fast dependency management.
+    - Run `uv sync` to install all dependencies from `pyproject.toml`.
 3.  **Implement**:
     - Add your model in `models/your_model.py`. It must inherit `pl.LightningModule`.
     - Add your data module in `data/{task}/{dataset}.py` (e.g., `data/classification/mnist.py`). It must inherit `pl.LightningDataModule`.
+    - Configure them in `configs/model` and `configs/data` by specifying the `_target_` key for Hydra instantiation.
 4.  **Run**:
-    - `python train.py model.name=YourModel data.name=MNISTDataModule`
+    - `uv run python train.py model=your_model data=mnist`
     - Or update `configs/config.yaml` defaults.
 5.  **Clean**: Delete this section and update the title below.
 
@@ -19,11 +20,22 @@
 
 [Short description of the project]
 
+## Features
+- **Boilerplate-free**: Powered by the custom `@run` decorator, PyTorch Lightning training loops, logging, automatic resuming, and model compilation are automatically handled.
+- **Hydra Configuration**: Full integration with Hydra for dynamic instantiation of models and data modules via the `_target_` key.
+- **Auto-resuming**: Robust, seamless checkpoint resuming with `hydra-auto-resume`.
+- **HPC Ready**: Pre-configured with `hydra-submitit-launcher` for easy Slurm cluster scaling.
+
 ## Installation
 
+We use `uv` as the package manager for speed and determinism.
+
 ```bash
-conda env create -f environment.yml
-conda activate torch
+# Sync and install the virtual environment
+uv sync
+
+# (Optional) activate the environment manually
+source .venv/bin/activate
 ```
 
 ## Usage
@@ -31,7 +43,7 @@ conda activate torch
 To train the model:
 
 ```bash
-python train.py
+uv run python train.py
 ```
 
 ### Configuration
@@ -39,48 +51,30 @@ python train.py
 You can override parameters from the command line:
 
 ```bash
-python train.py model.name=MyModel data.name=CIFAR10
+uv run python train.py model=TemplateModel data=TemplateDataModule
 ```
 
-`data.name` is used for the log directory name, while `data.class_name` is used to import the class.
+Models and data modules are dynamically instantiated by Hydra using their `_target_` paths defined in `configs/model/` and `configs/data/`.
 
-### Multirun
+### Advanced Launching (Slurm & Ablations)
 
-You can run hyperparameter sweeps using the `-m` or `--multirun` flag:
+You can launch hyperparameter sweeps natively.
 
 ```bash
-python train.py -m max_epochs=5,10 seed=42,43
+uv run python train.py -m max_epochs=5,10 seed=42,43
 ```
 
-This creates a folder structure organized by the sweep timestamp, then data/model, and finally the job number:
-
-```
-logs/
-└── multirun/
-    └── 2025-12-20_10-00-00/
-        ├── TemplateData/TemplateModel/0/
-        ├── TemplateData/TemplateModel/1/
-        ├── TemplateData/TemplateModel/2/
-        └── TemplateData/TemplateModel/3/
+To run on a Slurm cluster, use the provided submitit launcher:
+```bash
+uv run python train.py -m hydra/launcher=slurm max_epochs=50
 ```
 
 ### Resuming Training
 
-You can resume training from a previously interrupted run using the `resume` parameter. This will automatically:
-1.  Load the `last.ckpt` from the checkpoints folder.
-2.  Reconnect to the previous WandB run ID.
-3.  Continue logging in the same TensorBoard directory.
+We use `hydra-auto-resume`. You can resume training from a previously interrupted run by simply pointing the `resume` parameter to the run directory. This will automatically load the checkpoint, reconnect WandB, and restore the previous Hydra configurations!
 
-#### Single Run
-Point `resume` to the specific run directory:
 ```bash
-python train.py resume=logs/TemplateData/TemplateModel/2025-12-20_10-00-00
-```
-
-#### Multirun
-Point `resume` to the root multirun directory. **Note:** You must repeat the original parameters to ensure Hydra reconstructs the job list in the same order.
-```bash
-python train.py -m max_epochs=10 seed=1,2,3 resume=logs/multirun/2025-12-20_10-00-00
+uv run python train.py resume=logs/TemplateDataModule/TemplateModel/2026-06-22_10-00-00
 ```
 
 ## Logging
@@ -89,47 +83,39 @@ This project uses both **Weights & Biases (WandB)** and **TensorBoard** for logg
 
 ### Weights & Biases
 
-WandB is enabled by default. The logger is configured as follows:
-- **Project**: The name of the current directory (e.g., `ml-template`).
-- **Run Name**: `{data.name}/{model.name}`.
+WandB is enabled by default. The logger is configured automatically by the `@run` decorator:
+- **Project**: The name of the current directory.
+- **Run Name**: Automatically inferred from data and model choices.
 
 **Configuration:**
-You can change the WandB mode using the `wandb.mode` parameter:
+You can change the WandB mode using the `wandb` parameter:
 
 ```bash
 # Default (Online)
-python train.py
+uv run python train.py
 
 # Offline (save logs locally, sync later)
-python train.py wandb.mode=offline
+uv run python train.py wandb=offline
 
 # Disabled (no WandB logging)
-python train.py wandb.mode=disabled
-```
-
-### TensorBoard
-
-TensorBoard logs are saved locally in the `logs/` directory. Even if WandB is disabled, TensorBoard logging remains active.
-
-To view logs:
-```bash
-tensorboard --logdir logs/
+uv run python train.py wandb=disabled
 ```
 
 ## Evaluation
 
-To evaluate a trained model, provide the path to the checkpoint:
+The evaluation script relies on the exact same `@run` environment, ensuring consistent configurations. 
+To evaluate a trained model, provide the checkpoint path:
 
 ```bash
-python eval.py logs/DataModule/Model/.../checkpoints/last.ckpt
+uv run python eval.py ckpt_path=logs/TemplateDataModule/TemplateModel/.../checkpoints/last.ckpt
 ```
 
-This script automatically finds the corresponding configuration file in the `.hydra` directory relative to the checkpoint.
+This will run testing, calculate metrics, and output a structured `test_results.json` directly into your log directory.
 
 ## Project Structure
 
-- `configs/`: Hydra configurations.
-- `data/`: Data modules organized by task/type (e.g., `data/classification/mnist.py`).
+- `configs/`: Hydra configurations organized intuitively.
+- `data/`: Data modules (LightningDataModule).
 - `models/`: LightningModules.
-- `models/networks/`: Neural network architectures (nn.Module).
-- `logs/`: TensorBoard logs and checkpoints.
+- `utils/`: Core utilities like the `@run` decorator, advanced callbacks, and evaluation logic.
+- `logs/`: Checkpoints, source-code backups, TensorBoard logs, and test results.
