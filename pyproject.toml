@@ -3,7 +3,7 @@ name = "ml-template"
 version = "0.1.0"
 description = "A machine learning project template"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.14"
 dependencies = [
     "torch",
     "torchvision",
@@ -14,10 +14,13 @@ dependencies = [
     "numpy",
     "opt-einsum",
     "hydra-core",
+    "hydra-submitit-launcher",
     "pandas",
     "torch-tb-profiler",
     "wandb",
     "scipy",
+    "hydra-auto-resume @ git+https://github.com/yesung31/hydra-auto-resume.git",
+    "hydra-ablation-sweeper @ git+https://github.com/yesung31/hydra-ablation-sweeper.git",
     # "submodule_name @ file://./path/to/submodule",
 ]
 

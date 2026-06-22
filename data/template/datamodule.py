@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader, TensorDataset
 class TemplateDataModule(LightningDataModule):
     def __init__(self, **kwargs):
         super().__init__()
-        self.save_hyperparameters()
+        self.save_hyperparameters(ignore=["name", "_target_"])
         warnings.warn(
             "TemplateDataModule is using dummy random data. "
             "Replace this with your actual data loading logic.",

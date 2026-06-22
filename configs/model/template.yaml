@@ -1,2 +1,3 @@
 name: TemplateModel
+_target_: models.TemplateModel
 lr: 1e-3

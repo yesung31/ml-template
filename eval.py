@@ -1,50 +1,39 @@
-import argparse
-import os
-import sys
+from pathlib import Path
 
 import pytorch_lightning as pl
+from omegaconf import DictConfig
+from pytorch_lightning import LightningDataModule, LightningModule
 
-import data
-import models
-from utils.helpers import instantiate, load_config_from_ckpt
+from utils.callbacks import ScientificProgressBar
+from utils.results import save_test_results
+from utils.run import run
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Evaluate a trained model.")
-    parser.add_argument("ckpt_path", type=str, help="Path to the checkpoint file (.ckpt)")
-    args = parser.parse_args()
-
-    if not os.path.exists(args.ckpt_path):
-        print(f"Checkpoint not found: {args.ckpt_path}")
-        sys.exit(1)
-
-    cfg = load_config_from_ckpt(args.ckpt_path)
-
-    pl.seed_everything(cfg.seed)
-
-    # Dynamic loading
-    ModelClass = getattr(models, cfg.model.name)
-    DataClass = getattr(data, cfg.data.name)
-
-    print(f"Model Class: {ModelClass.__name__}")
-    print(f"Data Module Class: {DataClass.__name__}")
-
-    # Initialize DataModule
-    dm = instantiate(DataClass, cfg.data)
-
-    # Load Model from Checkpoint
-    print(f"Loading model from {args.ckpt_path}")
-    model = ModelClass.load_from_checkpoint(args.ckpt_path)
-
-    # Trainer for testing
+@run(eval=True)
+def main(
+    cfg: DictConfig,
+    hydra_cfg: DictConfig,
+    model: LightningModule,
+    dm: LightningDataModule,
+    log_dir: Path,
+    ckpt_path: str,
+    wandb_id: str,
+):
     trainer = pl.Trainer(
         accelerator=cfg.accelerator,
         devices=cfg.devices,
-        logger=False,  # No logging during eval usually
+        precision="bf16-mixed",
+        callbacks=[ScientificProgressBar(refresh_rate=1, metric_update_interval=10)],
+        default_root_dir=log_dir,
+        logger=False,
+        enable_checkpointing=False,
     )
 
-    print("Starting testing...")
-    trainer.test(model, datamodule=dm)
+    print(f"Starting testing using checkpoint: {ckpt_path}")
+    results = trainer.test(model, dm, ckpt_path=ckpt_path)
+
+    # Save formatted results
+    save_test_results(results, dm, log_dir)
 
 
 if __name__ == "__main__":

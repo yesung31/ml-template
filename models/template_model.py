@@ -10,7 +10,7 @@ from models.networks.template_network import TemplateNetwork
 class TemplateModel(LightningModule):
     def __init__(self, **kwargs):
         super().__init__()
-        self.save_hyperparameters()
+        self.save_hyperparameters(ignore=["name", "_target_"])
 
         # Initialize the dummy network
         self.net = TemplateNetwork()

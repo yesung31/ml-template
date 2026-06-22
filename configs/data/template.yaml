@@ -1,3 +1,4 @@
 name: TemplateDataModule
+_target_: data.TemplateDataModule
 batch_size: 32
 num_workers: 4
